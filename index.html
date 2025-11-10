@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Zama Project Quiz — Learn about Zama</title>
+  <style>
+    body{font-family:Inter, Roboto, Arial, sans-serif; max-width:900px;margin:32px auto;padding:16px;background:#e0e7ff;}
+    header{background:linear-gradient(90deg,#1e3a8a,#312e81);color:white;padding:50px;border-radius:16px;text-align:center;box-shadow:0 6px 30px rgba(0,0,0,0.4);animation:zoomIn 1s ease-in-out;}
+    @keyframes zoomIn{0%{transform:scale(0.4);opacity:0;}100%{transform:scale(1);opacity:1;}}
+    h1{margin:0;font-size:42px;text-shadow:3px 3px 8px rgba(0,0,0,0.4);}
+    .card{border:1px solid #ccd6f6;border-radius:10px;padding:20px;margin-top:24px;box-shadow:0 4px 16px rgba(0,0,0,0.15);}
+    .question{font-size:22px;margin-bottom:14px;font-weight:bold;padding:24px;border-radius:14px;background:linear-gradient(135deg,#3730a3,#4c1d95,#6d28d9);color:#fff;}
+    .options{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+    button.opt{padding:14px 16px;border-radius:12px;border:1px solid #4f46e5;background:linear-gradient(135deg,#6366f1,#818cf8,#a5b4fc);font-weight:300;cursor:pointer;text-align:left;transition:transform 0.2s ease, box-shadow 0.2s ease;}
+    button.opt:hover{transform:scale(1.03);box-shadow:0 0 12px rgba(0,0,0,0.25);}
+    button.opt:disabled{opacity:0.8;cursor:default;}
+    .meta{margin-top:16px;display:flex;justify-content:space-between;align-items:center;}
+    .next-btn{padding:12px 24px;border-radius:12px;border:none;background:linear-gradient(90deg,#312e81,#1e40af);color:white;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+    .score{font-size:30px;font-weight:800;margin-bottom:26px;animation:bounceIn 1s ease-in-out;}
+    .correct{background:#d1fae5 !important;border-color:#059669 !important;color:#064e3b !important;}
+    .wrong{background:#fee2e2 !important;border-color:#b91c1c !important;color:#7f1d1d !important;}
+    .answer-reveal{margin-top:14px;font-weight:700;}
+    a.blog-link{display:inline-block;margin-top:20px;color:#1e40af;}
+    footer{margin-top:30px;text-align:center;color:#334155;}
+    .trophy{font-size:120px;animation:spin 1.7s ease-in-out infinite alternate;}
+    @keyframes spin{0%{transform:scale(1) rotate(-6deg);}100%{transform:scale(1.1) rotate(6deg);}}
+    @keyframes bounceIn{0%{transform:scale(0.3);opacity:0;}50%{transform:scale(1.05);opacity:1;}100%{transform:scale(1);}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1><strong>Welcome — Zama Project Quiz</strong></h1>
+    <div style="margin-top:8px;opacity:0.9;font-size:20px;">Test your knowledge of the Zama project. 
+                                                            zama Creator Program Season 4 Live </div>
+  </header>
+
+  <main class="card" id="quiz">
+    <div id="question-area"></div>
+    <div id="controls" class="meta" style="display:none">
+      <div id="progress"></div>
+      <div><button id="nextBtn" class="next-btn">Next</button></div>
+    </div>
+  </main>
+
+  <div id="result" class="card" style="display:none;text-align:center;"></div>
+
+  <div style="text-align:center;margin-top:10px;">
+    <a class="blog-link" id="sourceLink" href="https://zama.ai/blog" target="_blank" rel="noopener noreferrer">Read more on the official Zama blog</a>
+  </div>
+
+  <footer>Made for learning — save this file to your GitHub repo as <strong>index.html</strong></footer>
+
+  <script>
+    const questions = [
+      {q: "What core technology does Zama build around?", opts: ["Zero-knowledge proofs","Fully Homomorphic Encryption (FHE)","Secure Multi-Party Computation","Trusted Execution Environments"], a:1},
+      {q: "Which protocol did Zama announce involving confidential smart contracts on any chain?", opts: ["Zama Confidential Blockchain Protocol","Zama Transparent Ledger Protocol","Zama Secure Token Protocol","Zama Privacy Layer Protocol"], a:0},
+      {q: "What milestone did Zama achieve for TFHE bootstrapping latency?", opts: ["Under 10 ms","Under 1 ms","Under 100 ms","Under 50 ms"], a:1},
+      {q: "Zama’s protocol allows end-to-end encryption of transaction inputs and state. True or False?", opts: ["True","False","Partially true","Depends on chain"], a:0},
+      {q: "Which of the following is a Zama open-source library?", opts: ["TFHE-rs","zkLedger","ConfCrypt","SecureFHE"], a:0},
+      {q: "What type of smart contracts does Zama’s protocol enable?", opts: ["Only public smart contracts","Confidential smart contracts","Governance smart contracts","Oracle smart contracts"], a:1},
+      {q: "In which language is TFHE-rs implemented?", opts: ["C++","Go","Rust","Python"], a:2},
+      {q: "What is a key benefit of Zama’s protocol regarding existing chains?", opts: ["Requires a brand new chain","Sits on top of existing chains","Removes all privacy controls","Only works on private chains"], a:1},
+      {q: "What is the approximate throughput Zama aims for as mentioned in a blog post?", opts: ["100 TPS","20 TPS","1,000 TPS","50 TPS"], a:2},
+      {q: "Zama raised how much in their Series B funding round? (≈)", opts: ["$10 m","$57 m","$150 m","$200 m"], a:1},
+      {q: "What does FHE allow you to do?", opts: ["Compute on encrypted data","Only encrypt data at rest","Only decrypt data remotely","Transmit data faster"], a:0},
+      {q: "Which asset type is mentioned as a use-case for Zama’s protocol in the blog?", opts: ["NFTs","Real-World Assets (RWA)","Game-coins only","Simple token swaps"], a:1},
+      {q: "Which development environment can you use to write Zama contracts according to the blog?", opts: ["Only a new language","Standard Solidity toolchain","Only Rust","Only Python"], a:1},
+      {q: "Zama’s approach makes blockchain data ________", opts: ["Visible to all","Encrypted even during processing","Only for nodes","Untraceable"], a:1},
+      {q: "Where can you find more news and blog posts about Zama?", opts: ["Internal forum only","zama.ai/blog","GitHub issues","Private newsletter only"], a:1}
+    ];
+
+    let index = 0, score = 0;
+
+    const qArea = document.getElementById('question-area');
+    const controls = document.getElementById('controls');
+    const nextBtn = document.getElementById('nextBtn');
+    const progress = document.getElementById('progress');
+    const result = document.getElementById('result');
+
+    function renderQuestion(i){
+      const item = questions[i];
+      qArea.innerHTML = '';
+      const qDiv = document.createElement('div');
+      qDiv.className = 'question';
+      qDiv.innerHTML = `<strong>Q${i+1}. ${item.q}</strong>`;
+      qArea.appendChild(qDiv);
+
+      const optWrap = document.createElement('div');
+      optWrap.className = 'options';
+      item.opts.forEach((o, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'opt';
+        btn.innerHTML = `<strong>${String.fromCharCode(65+idx)}. ${o}</strong>`;
+        btn.onclick = () => handleAnswer(btn, idx, item.a);
+        optWrap.appendChild(btn);
+      });
+      qArea.appendChild(optWrap);
+
+      const reveal = document.createElement('div');
+      reveal.className = 'answer-reveal';
+      reveal.id = 'reveal';
+      qArea.appendChild(reveal);
+
+      controls.style.display = 'flex';
+      progress.textContent = `Question ${i+1} / ${questions.length}`;
+      nextBtn.style.display = 'none';
+    }
+
+    function handleAnswer(btn, chosen, correct){
+      const all = document.querySelectorAll('button.opt');
+      all.forEach(b => b.disabled = true);
+
+      if(chosen === correct){
+        btn.classList.add('correct');
+        score += 1;
+      } else {
+        btn.classList.add('wrong');
+        const correctBtn = all[correct];
+        if(correctBtn) correctBtn.classList.add('correct');
+      }
+
+      const reveal = document.getElementById('reveal');
+      reveal.textContent = 'Correct answer: ' + String.fromCharCode(65+correct) + '. ' + questions[index].opts[questions[index].a];
+
+      nextBtn.style.display = 'inline-block';
+      nextBtn.textContent = (index === questions.length-1) ? 'Finish' : 'Next';
+    }
+
+    nextBtn.addEventListener('click', () => {
+      index += 1;
+      if(index < questions.length) renderQuestion(index);
+      else showResult();
+    });
+
+    function showResult(){
+      document.getElementById('quiz').style.display = 'none';
+      result.style.display = 'block';
+
+      let trophy = '🏆';
+      if(score < 6) trophy = '🥉';
+      else if(score < 11) trophy = '🥈';
+      else trophy = '🏆';
+
+      result.innerHTML = `<div class='trophy'>${trophy}</div><div class="score">Your score: <strong>${score} / ${questions.length}</strong></div>`;
+
+      const restart = document.createElement('button');
+      restart.className = 'next-btn';
+      restart.textContent = 'Play Again';
+      restart.onclick = () => { location.reload(); };
+      result.appendChild(restart);
+
+      const link = document.createElement('div');
+      link.style.marginTop = '16px';
+      link.innerHTML = `<a href="https://zama.ai/blog" target="_blank" rel="noopener noreferrer">Visit the Zama blog for more</a>`;
+      result.appendChild(link);
+    }
+
+    renderQuestion(0);
+  </script>
+</body>
+</html>
